@@ -16,11 +16,12 @@ int main()
 	// Create and open a window for the game
 	RenderWindow window(vm, "Chaos Game!!", Style::Default);
 
+	// Create text variable and font variable to display directions for the user.
 	Text text;
 	Font font;
 	font.loadFromFile("Lato-Medium.ttf");
 	text.setFont(font);
-	text.setString("Click on the screen to create vertices! Once you have created 3 or more, press Lshift and click again!");
+	text.setString("Click on the screen to create vertices! Once you have created 3 or more, press Lshift and right click!");
 	text.setCharacterSize(36);
 	text.setPosition(140, 100);
 	
@@ -53,7 +54,7 @@ int main()
 					vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
 				}
 			}
-			if (Keyboard::isKeyPressed(Keyboard::LShift))
+			if (Keyboard::isKeyPressed(Keyboard::LShift))		// This is so that we have a way of allowing the user to say they are done inputting vertices.
 			{
 				while (window.pollEvent(event))
 				{
@@ -73,15 +74,11 @@ int main()
 	
 		if(points.size() > 0)
 		{
-		    ///generate more point(s)
-		    ///select random vertex
-			Vector2f vertex;
-		    ///calculate midpoint between random vertex and the last point in the vector
-			Vector2f out;
-		    ///push back the newly generated coord.
-			for (int i = 0; i < 50000; i++)
+			Vector2f vertex;					// Create temporary vertex equal to a random vertex in vertices
+			Vector2f out;						// Create an output point to push onto points vector
+			for (int i = 0; i < 50000; i++)				// Creates 50,000 points for higher resolution
 			{
-				vertex = vertices[rand() % vertices.size()];
+				vertex = vertices[rand() % vertices.size()];	// The use of vector.size() here is so that we can have as many vertices as the user wants.
 				out.x = (points[i].x + vertex.x) / 2;
 				out.y = (points[i].y + vertex.y) / 2;
 				points.push_back(out);
@@ -95,25 +92,15 @@ int main()
 		*/
 		window.clear();
 		window.draw(text);
-		for(int i = 0; i < vertices.size(); i++)
+		for(int i = 0; i < vertices.size(); i++)			// Draws vertices as they are placed
 		{
-			if (i < vertices.size() - 1)
-			{
-				RectangleShape rect(Vector2f(10, 10));
-				rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
-				rect.setFillColor(Color::Blue);
-				window.draw(rect);
-			}
-			else
-			{
-				RectangleShape rect(Vector2f(10, 10));
-				rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
-				rect.setFillColor(Color::Blue);
-				window.draw(rect);
-			}
+			RectangleShape rect(Vector2f(10, 10));
+			rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
+			rect.setFillColor(Color::Blue);
+			window.draw(rect);
 		}
 
-		for (int i = 1; i < points.size(); i++)
+		for (int i = 1; i < points.size(); i++)				// Draws points as their positions are calculated
 		{
 			RectangleShape draw(Vector2f(1, 1));
 			draw.setPosition(Vector2f(points[i].x, points[i].y));
