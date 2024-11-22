@@ -15,6 +15,14 @@ int main()
 	VideoMode vm(1920, 1080);
 	// Create and open a window for the game
 	RenderWindow window(vm, "Chaos Game!!", Style::Default);
+
+	Text text;
+	Font font;
+	font.loadFromFile("Lato-Medium.ttf");
+	text.setFont(font);
+	text.setString("Click on the screen to create vertices! Once you have created 3 or more, press Lshift and click again!");
+	text.setCharacterSize(36);
+	text.setPosition(140, 100);
 	
 	vector<Vector2f> vertices;
 	vector<Vector2f> points;
@@ -29,30 +37,29 @@ int main()
 		Event event;
 		while (window.pollEvent(event))
 		{
-		    if (event.type == Event::Closed)
-		    {
-					// Quit the game when the window is closed
-					window.close();
-		    }
-		    if (event.type == sf::Event::MouseButtonPressed)
-		    {
-			if (event.mouseButton.button == sf::Mouse::Left)
+			if (event.type == Event::Closed)
 			{
-			    std::cout << "the left button was pressed" << std::endl;
-			    std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-			    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
-	
-			    if(vertices.size() < 3)
-			    {
-				vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
-			    }
-			    else if(points.size() == 0)
-			    {
-				///fourth click
-				///push back to points vector
-			    }
+				// Quit the game when the window is closed
+				window.close();
 			}
-		    }
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				if (event.mouseButton.button == sf::Mouse::Left)
+				{
+					std::cout << "the left button was pressed" << std::endl;
+					std::cout << "mouse x: " << event.mouseButton.x << std::endl;
+					std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+
+					vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
+				}
+			}
+			if (Keyboard::isKeyPressed(Keyboard::LShift))
+			{
+				while (window.pollEvent(event))
+				{
+					points.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
+				}
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
@@ -68,8 +75,17 @@ int main()
 		{
 		    ///generate more point(s)
 		    ///select random vertex
+			Vector2f vertex;
 		    ///calculate midpoint between random vertex and the last point in the vector
+			Vector2f out;
 		    ///push back the newly generated coord.
+			for (int i = 0; i < 50000; i++)
+			{
+				vertex = vertices[rand() % vertices.size()];
+				out.x = (points[i].x + vertex.x) / 2;
+				out.y = (points[i].y + vertex.y) / 2;
+				points.push_back(out);
+			}
 		}
 	
 		/*
@@ -78,12 +94,31 @@ int main()
 		****************************************
 		*/
 		window.clear();
+		window.draw(text);
 		for(int i = 0; i < vertices.size(); i++)
 		{
-		    RectangleShape rect(Vector2f(10,10));
-		    rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
-		    rect.setFillColor(Color::Blue);
-		    window.draw(rect);
+			if (i < vertices.size() - 1)
+			{
+				RectangleShape rect(Vector2f(10, 10));
+				rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
+				rect.setFillColor(Color::Blue);
+				window.draw(rect);
+			}
+			else
+			{
+				RectangleShape rect(Vector2f(10, 10));
+				rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
+				rect.setFillColor(Color::Blue);
+				window.draw(rect);
+			}
+		}
+
+		for (int i = 1; i < points.size(); i++)
+		{
+			RectangleShape draw(Vector2f(1, 1));
+			draw.setPosition(Vector2f(points[i].x, points[i].y));
+			draw.setFillColor(Color::Blue);
+			window.draw(draw);
 		}
 		window.display();
 	}
